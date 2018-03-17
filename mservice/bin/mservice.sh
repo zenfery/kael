@@ -37,7 +37,8 @@ if [ -z "$JARFILE" ]; then
     if [ $jar_num -gt 0 ]; then
         echo "[`date`] Detect jar file number is $jar_num, more than 0 , it will fetch the highest version jar ... "
         jarfiles=$( ls -l $DOCS_HOME/*.jar | awk '{print $NF}' )
-        version="0.0.0.0"
+        version="0"
+        version_before="0.0.0.0"
         #version_number=0
         for jarfile in $jarfiles; do
             JARFILE="$jarfile"
@@ -45,39 +46,49 @@ if [ -z "$JARFILE" ]; then
             if [ -n "$input_version" ];then
                 break
             fi
-            ver_temp=${jarfile_name%.*}
-            ver_temp=${ver_temp#*-}
-            version=$ver_temp
+            ver_curr=${jarfile_name%.*}
+            ver_curr=${ver_curr##*-}
+            version_temp=${version}
 
             app_name_temp=${jarfile_name%-*}
-            echo "[`date`] one of the jar file is  : $jarfile , detect app name is [$app_name_temp], version is [$ver_temp], version_before is [$version]"
-            dot_count_temp=$(echo "$ver_temp" | awk -F '.' '{print NF-1}')
-            #echo "dot_count_temp : $dot_count_temp"
-            #version_number_temp=$(echo "$ver_temp"| sed 's/\.//g')
-            if [ $dot_count_temp -eq 2 ]; then
-                ver_temp="$ver_temp"".0"
-            elif [ $dot_count_temp -eq 1 ]; then
-                ver_temp="$ver_temp"".0.0"
-            elif [ $dot_count_temp -eq 0 ]; then
-                ver_temp="$ver_temp"".0.0.0"
-            fi
-            #echo "ver_temp: $ver_temp"
+            echo "[`date`] one of the jar file is  : $jarfile , detect app name is [$app_name_temp], version is [$ver_curr], version_before is [$version]"
+            ## compare version_before and ver_curr
 
-            ver_temp_arr=(${ver_temp//./ })
-            #echo "ver_temp_arr: ${ver_temp_arr[0]}, ${ver_temp_arr[1]}, ${ver_temp_arr[2]}, ${ver_temp_arr[3]}"
-            version_arr=(${version//./ })
-            #echo "version_arr: ${version_arr[0]}, ${version_arr[1]}, ${version_arr[2]}, ${version_arr[3]}"
-            if [ ${ver_temp_arr[0]} -gt ${version_arr[0]} ]; then
-                break
-            elif [ ${ver_temp_arr[0]} -eq ${version_arr[0]} ]; then
-                if [ ${ver_temp_arr[1]} -gt ${version_arr[1]} ]; then
-                    break
-                elif [ ${ver_temp_arr[1]} -eq ${version_arr[1]} ]; then
-                    if [ ${ver_temp_arr[2]} -gt ${version_arr[2]} ]; then
-                        break
-                    elif [ ${ver_temp_arr[2]} -eq ${version_arr[2]} ]; then
-                        if [ ${ver_temp_arr[3]} -gt ${version_arr[3]} ]; then
-                            break
+            dot_count_curr=$(echo "$ver_curr" | awk -F '.' '{print NF-1}')
+            if [ $dot_count_curr -eq 2 ]; then
+                ver_curr_temp="$ver_curr"".0"
+            elif [ $dot_count_curr -eq 1 ]; then
+                ver_curr_temp="$ver_curr"".0.0"
+            elif [ $dot_count_curr -eq 0 ]; then
+                ver_curr_temp="$ver_curr"".0.0.0"
+            fi
+
+            dot_count_version=$(echo "$version_temp" | awk -F '.' '{print NF-1}')
+            if [ $dot_count_version -eq 2 ]; then
+                version_temp="$version_temp"".0"
+            elif [ $dot_count_version -eq 1 ]; then
+                version_temp="$version_temp"".0.0"
+            elif [ $dot_count_version -eq 0 ]; then
+                version_temp="$version_temp"".0.0.0"
+            fi
+
+            ver_curr_temp_arr=(${ver_curr_temp//./ })
+            version_temp_arr=(${version_temp//./ })
+            if [ ${ver_curr_temp_arr[0]} -gt ${version_temp_arr[0]} ]; then
+                version=$ver_curr
+                continue 
+            elif [ ${ver_curr_temp_arr[0]} -eq ${version_temp_arr[0]} ]; then
+                if [ ${ver_curr_temp_arr[1]} -gt ${version_temp_arr[1]} ]; then
+                    version=$ver_curr
+                    continue 
+                elif [ ${ver_curr_temp_arr[1]} -eq ${version_temp_arr[1]} ]; then
+                    if [ ${ver_curr_temp_arr[2]} -gt ${version_temp_arr[2]} ]; then
+                        version=$ver_curr
+                        continue
+                    elif [ ${ver_curr_temp_arr[2]} -eq ${version_temp_arr[2]} ]; then
+                        if [ ${ver_curr_temp_arr[3]} -gt ${version_temp_arr[3]} ]; then
+                            version=$ver_curr
+                            continue
                         fi
                     fi
                 fi
@@ -85,7 +96,6 @@ if [ -z "$JARFILE" ]; then
 
         done #end for
 
-        #echo "version_number : $version_number"
         echo "[`date`] the max version of jar file is  : [$version]"
         echo "[`date`] the correct jar file is  : [$JARFILE]"
     else
