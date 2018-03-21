@@ -134,6 +134,9 @@ echo "[`date`] ::: LOG_FOLDER -> $LOG_FOLDER"
 echo "[`date`] ::: LOG_FILENAME -> $LOG_FILENAME"
 
 log_full_filename=$LOG_FOLDER/$LOG_FILENAME
+if [ ! -d "$project_home/run" ];then
+    mkdir -p $project_home/run
+fi
 PIDFILE=$project_home/run/mservice.pid
 ## start 启动
 function start(){

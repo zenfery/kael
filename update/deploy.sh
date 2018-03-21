@@ -69,9 +69,13 @@ function root_exec(){
     ## begin to deploy
     user_home_dir=$(cat /etc/passwd | egrep "^$user_name:" | awk -F":" '{ print $6 }')
     echo " [`date`] we will to deploy the package[$package_name] to user[$user_name]($user_home_dir), group[$group_name]."
+    release_dir="$user_home_dir/kael/update/release/"
     rm -f "$user_home_dir/kael/update/release/*"
-    mv $upload_dir/$package_name $user_home_dir/kael/update/release/
-    chown -R $user_name.$group_name $user_home_dir/kael/update/release/
+    if [ ! -d "$release_dir" ]; then
+        mkdir -p $release_dir
+    fi
+    mv $upload_dir/$package_name $release_dir
+    chown -R $user_name.$group_name $release_dir
     #su - $user_name -s /bin/sh kael/update/deploy.sh
     su - $user_name <<EOF
     /bin/sh kael/update/deploy.sh;
