@@ -41,7 +41,7 @@ if [ -z "$JARFILE" ]; then
         version_before="0.0.0.0"
         #version_number=0
         for jarfile in $jarfiles; do
-            JARFILE="$jarfile"
+
             jarfile_name=$(basename $jarfile)
             if [ -n "$input_version" ];then
                 break
@@ -54,6 +54,7 @@ if [ -z "$JARFILE" ]; then
             echo "[`date`] one of the jar file is  : $jarfile , detect app name is [$app_name_temp], version is [$ver_curr], version_before is [$version]"
             ## compare version_before and ver_curr
 
+            ver_curr_temp=$ver_curr
             dot_count_curr=$(echo "$ver_curr" | awk -F '.' '{print NF-1}')
             if [ $dot_count_curr -eq 2 ]; then
                 ver_curr_temp="$ver_curr"".0"
@@ -62,6 +63,7 @@ if [ -z "$JARFILE" ]; then
             elif [ $dot_count_curr -eq 0 ]; then
                 ver_curr_temp="$ver_curr"".0.0.0"
             fi
+            echo "ver_curr_temp = $ver_curr_temp"
 
             dot_count_version=$(echo "$version_temp" | awk -F '.' '{print NF-1}')
             if [ $dot_count_version -eq 2 ]; then
@@ -71,23 +73,28 @@ if [ -z "$JARFILE" ]; then
             elif [ $dot_count_version -eq 0 ]; then
                 version_temp="$version_temp"".0.0.0"
             fi
+            echo "version_temp = $version_temp"
 
             ver_curr_temp_arr=(${ver_curr_temp//./ })
             version_temp_arr=(${version_temp//./ })
-            if [ ${ver_curr_temp_arr[0]} -gt ${version_temp_arr[0]} ]; then
+            if [[ ${ver_curr_temp_arr[0]} -gt ${version_temp_arr[0]} ]]; then
                 version=$ver_curr
-                continue 
-            elif [ ${ver_curr_temp_arr[0]} -eq ${version_temp_arr[0]} ]; then
-                if [ ${ver_curr_temp_arr[1]} -gt ${version_temp_arr[1]} ]; then
+                JARFILE="$jarfile"
+                continue
+            elif [[ ${ver_curr_temp_arr[0]} -eq ${version_temp_arr[0]} ]]; then
+                if [[ ${ver_curr_temp_arr[1]} -gt ${version_temp_arr[1]} ]]; then
                     version=$ver_curr
-                    continue 
-                elif [ ${ver_curr_temp_arr[1]} -eq ${version_temp_arr[1]} ]; then
-                    if [ ${ver_curr_temp_arr[2]} -gt ${version_temp_arr[2]} ]; then
+                    JARFILE="$jarfile"
+                    continue
+                elif [[ ${ver_curr_temp_arr[1]} -eq ${version_temp_arr[1]} ]]; then
+                    if [[ ${ver_curr_temp_arr[2]} -gt ${version_temp_arr[2]} ]]; then
                         version=$ver_curr
+                        JARFILE="$jarfile"
                         continue
-                    elif [ ${ver_curr_temp_arr[2]} -eq ${version_temp_arr[2]} ]; then
-                        if [ ${ver_curr_temp_arr[3]} -gt ${version_temp_arr[3]} ]; then
+                    elif [[ ${ver_curr_temp_arr[2]} -eq ${version_temp_arr[2]} ]]; then
+                        if [[ ${ver_curr_temp_arr[3]} -gt ${version_temp_arr[3]} ]]; then
                             version=$ver_curr
+                            JARFILE="$jarfile"
                             continue
                         fi
                     fi
@@ -134,6 +141,9 @@ echo "[`date`] ::: LOG_FOLDER -> $LOG_FOLDER"
 echo "[`date`] ::: LOG_FILENAME -> $LOG_FILENAME"
 
 log_full_filename=$LOG_FOLDER/$LOG_FILENAME
+if [ ! -d "$project_home/run" ];then
+    mkdir -p $project_home/run
+fi
 PIDFILE=$project_home/run/mservice.pid
 ## start 启动
 function start(){
@@ -196,7 +206,7 @@ function stop(){
 
 function status(){
     echo "[`date`] mservice tools version [$VERSION], current application [$JARFILE]... "
-    
+
 }
 
 ## main
