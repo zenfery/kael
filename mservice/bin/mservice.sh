@@ -79,14 +79,14 @@ if [ -z "$JARFILE" ]; then
             if [[ ${ver_curr_temp_arr[0]} -gt ${version_temp_arr[0]} ]]; then
                 version=$ver_curr
                 JARFILE="$jarfile"
-                continue 
-            elif [ ${ver_curr_temp_arr[0]} -eq ${version_temp_arr[0]} ]; then
-                if [ ${ver_curr_temp_arr[1]} -gt ${version_temp_arr[1]} ]; then
+                continue
+            elif [[ ${ver_curr_temp_arr[0]} -eq ${version_temp_arr[0]} ]]; then
+                if [[ ${ver_curr_temp_arr[1]} -gt ${version_temp_arr[1]} ]]; then
                     version=$ver_curr
                     JARFILE="$jarfile"
-                    continue 
-                elif [ ${ver_curr_temp_arr[1]} -eq ${version_temp_arr[1]} ]; then
-                    if [ ${ver_curr_temp_arr[2]} -gt ${version_temp_arr[2]} ]; then
+                    continue
+                elif [[ ${ver_curr_temp_arr[1]} -eq ${version_temp_arr[1]} ]]; then
+                    if [[ ${ver_curr_temp_arr[2]} -gt ${version_temp_arr[2]} ]]; then
                         version=$ver_curr
                         JARFILE="$jarfile"
                         continue
