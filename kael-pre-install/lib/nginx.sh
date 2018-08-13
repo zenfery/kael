@@ -40,7 +40,7 @@ function nginx(){
         log "There is no pcre source package exist in $src_dir ."
         pcre_continue="Y"
         read -p " >> is continue? [Y/N]: " pcre_continue
-        if [ "$pcre_continue" != "Y" ] || [ "$pcre_continue" != "y" ]; then
+        if [[ "$pcre_continue" != "Y" && "$pcre_continue" != "y" ]]; then
             exit $NGINX_CODE_NO_PCRE
         fi
     else
@@ -49,13 +49,13 @@ function nginx(){
         tar -xzvf "$pcre_name"
         configure_params="$configure_params --with-pcre=$src_dir/$pcre_source_dir"
     fi
-    ## zlib 
+    ## zlib
     zlib_source_dir=
     if [ -z "$zlib_name" ]; then
         log "There is no zlib source package exist in $src_dir ."
         zlib_continue="Y"
         read -p " >> is continue? [Y/N]: " zlib_continue
-        if [ "$zlib_continue" != "Y" ] || [ "$zlib_continue" != "y" ]; then
+        if [[ "$zlib_continue" != "Y" && "$zlib_continue" != "y" ]]; then
             exit $NGINX_CODE_NO_ZLIB
         fi
     else
@@ -64,13 +64,14 @@ function nginx(){
         tar -xzvf "$zlib_name"
         configure_params="$configure_params --with-zlib=$src_dir/$zlib_source_dir"
     fi
-    ## cache_purge 
+    ## cache_purge
     cache_purge_source_dir=
     if [ -z "$cache_purge_name" ]; then
         log "There is no cache_purge source package exist in $src_dir ."
         cache_purge_continue="Y"
         read -p " >> is continue? [Y/N]: " cache_purge_continue
-        if [ "$cache_purge_continue" != "Y" ] || [ "$cache_purge_continue" != "y" ]; then
+        log " ==> cache_purge_continue: -${cache_purge_continue}- "
+        if [[ "$cache_purge_continue" != "Y" && "$cache_purge_continue" != "y" ]]; then
             exit $NGINX_CODE_NO_CACHE_PURGE
         fi
     else
@@ -94,7 +95,7 @@ function nginx(){
     cp -f $conf_tpl_dir/nginx/nginx.conf $nginx_home/conf/
     log "mkdir -p $nginx_home/conf/sites $nginx_home/conf/crt"
     mkdir -p $nginx_home/conf/sites $nginx_home/conf/crt
-   
-    ## end 
+
+    ## end
     sleep $SLEEP_TIME
 }
