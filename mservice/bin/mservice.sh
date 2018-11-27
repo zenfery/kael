@@ -1,5 +1,12 @@
 #!/bin/sh
 
+curr_user=$(whoami)
+echo " [`date`] current user is [$curr_user]."
+if [ $curr_user == "root" ];then
+    echo "* WARN: this script can not exec by root user."
+    exit 444
+fi
+
 ## Base Directory
 mydir=$(cd "$(dirname "$0")"; pwd)
 echo "[`date`] Current directory : $mydir"
@@ -15,7 +22,7 @@ source $project_home/../conf/sys.conf
 if [ -z "$ENV_HOME" ]; then
     ENV_HOME=$HOME
 fi
-echo " =====> DEBUG: ENV_HOME = $ENV_HOME, JAVA_HOME = $JAVA_HOME"
+
 
 JAVA_CMD=
 if [ -z "$JAVA_HOME" ]; then
@@ -24,15 +31,37 @@ if [ -z "$JAVA_HOME" ]; then
 else
     JAVA_CMD=$JAVA_HOME/bin/java
 fi
+echo " =====> DEBUG: ENV_HOME = $ENV_HOME, JAVA_HOME = $JAVA_HOME"
 
 if [ -z "$DOCS_HOME" ]; then
     DOCS_HOME=$ENV_HOME/apps/docs
 fi
 
 
+## handle base variables | merge input params
+# => APP_NAME
+if [ -z "$APP_NAME" ]; then
+    ## 如果 APP_NAME 未指定，则根据发布包目录下面的文件来自动解析出来
+    jar_num=$( ls $DOCS_HOME/*.jar | wc -l )
+    if [ $jar_num -gt 0 ]; then
+        jarfile=$( ls -l $DOCS_HOME/*.jar | awk '{print $NF}' | head -1 )
+        jarfile_name=$( basename $jarfile )
+        APP_NAME=${jarfile_name%-*}
+    else
+        echo "[`date`] *** Error ::: Resolve APP_NAME, There is no jar file exist in $DOCS_HOME ..."
+        exit 101
+    fi
+
+fi
+echo "==> Detect APP_NAME is [$APP_NAME]"
+
+# => JARFILE
 input_version="$2"
 echo "input_version: $input_version"
-if [ -z "$JARFILE" ]; then
+if [ ! -z "$input_version" ];then
+    JARFILE="$DOCS_HOME/$APP_NAME-$input_version.jar"
+else
+    # if the version not set, use the max version
     jar_num=$( ls $DOCS_HOME/*.jar | wc -l )
     if [ $jar_num -gt 0 ]; then
         echo "[`date`] Detect jar file number is $jar_num, more than 0 , it will fetch the highest version jar ... "
@@ -42,9 +71,7 @@ if [ -z "$JARFILE" ]; then
         #version_number=0
         for jarfile in $jarfiles; do
             jarfile_name=$(basename $jarfile)
-            if [ -n "$input_version" ];then
-                break
-            fi
+
             ver_curr=${jarfile_name%.*}
             ver_curr=${ver_curr##*-}
             version_temp=${version}
@@ -110,15 +137,6 @@ if [ -z "$JARFILE" ]; then
     fi
 fi
 
-if [ -z "$APP_NAME" ]; then
-    jarfile_name=$( basename $JARFILE )
-    APP_NAME=${jarfile_name%-*}
-fi
-
-if [ ! -z "$input_version" ];then
-    JARFILE=$(dirname $JARFILE)"/$APP_NAME-$input_version.jar"
-fi
-
 if [ -z "$LOG_FOLDER" ]; then
     LOG_FOLDER=$ENV_HOME/apps/logs
 fi
@@ -144,6 +162,7 @@ if [ ! -d "$project_home/run" ];then
     mkdir -p $project_home/run
 fi
 PIDFILE=$project_home/run/mservice.pid
+
 ## start 启动
 function start(){
     if [ -f $PIDFILE ]; then

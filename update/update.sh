@@ -12,3 +12,4 @@ source $mydir/conf/env.conf
 
 sh $mydir/package.sh 2>&1
 sh $mydir/deploy.sh 2>&1
+sh $mydir/restart.sh 2>&1
