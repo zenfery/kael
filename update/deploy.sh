@@ -2,8 +2,6 @@
 ## @auth: pengfei.cheng 2015-08-18
 ## @desc: 项目部署
 ############################################################
-## 2017-03-17, pengfei.cheng, 支持mservice部署
-############################################################
 
 # 当前脚本目录
 mydir=$(cd "$(dirname "$0")"; pwd)
@@ -21,8 +19,9 @@ echo " [`date`] 传入参数的个数为 [$#] $1 $2"
 #### usage
 function usage(){
     echo " *** Usage(root): $0 user [package_name] "
-    echo " *** Usage(not root): $0 [version] "
+    echo " ***       $0 bill"
     echo " ***       $0 bill bill-0.0.1.jar "
+    echo " *** Usage(not root): $0 [version] "
     echo " ***       $0 0.0.1 "
     echo " ***       $0 "
 }
@@ -162,10 +161,10 @@ function deploy_backup(){
 }
 
 #### 重启服务
-function restart(){
-    sh $mydir/restart.sh
-    cd $mydir
-}
+# function restart(){
+#     sh $mydir/restart.sh
+#     cd $mydir
+# }
 
 #### 删除过期备份程序
 function delete(){
@@ -183,6 +182,6 @@ if [ $curr_user == "root" ];then
 else
     search_package
     deploy_backup
-    restart
+    #restart
     delete
 fi
