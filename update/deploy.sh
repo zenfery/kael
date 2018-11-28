@@ -18,7 +18,7 @@ echo " [`date`] 传入参数的个数为 [$#] $1 $2"
 
 #### usage
 function usage(){
-    echo " *** Usage(root): $0 user [package_name] "
+    echo " *** Usage(root): $0 user [version] "
     echo " ***       $0 bill"
     echo " ***       $0 bill bill-0.0.1.jar "
     echo " *** Usage(not root): $0 [version] "
@@ -40,41 +40,54 @@ function root_exec(){
             package_name=$(ls $upload_dir/*)
             package_name=${package_name##*/}
         else
-            echo " [`date`] *** ERROR *** package[$upload_dir/*] is 0 or more than 1. "
-            exit 100
+            echo " [`date`] * WARN * package[$upload_dir/*] is 0 or more than 1. "
         fi
     elif [ $# -eq 2 ]; then
         echo " [`date`] parameter number is $#, ok."
         user_name=$1
-        package_name=$2
+        package_name_prefix="$1-$2"
+        package_file=$( ls $upload_dir/$package_name_prefix* )
+        if [ -z "$package_file" ]; then
+            echo "** error ** The $1:$2 not found. 你指定的 $1:$2 找不到，请查找原因后重试."
+            exit 104
+        else
+            package_name=${package_file##*/}
+        fi
     else
-        echo " [`date`] *** ERROR *** parameter number is $#."
+        echo " [`date`] parameter number is $#."
         usage
         exit 100
     fi
-    ## 判断将要部署的用户是否存在? judge the deploy user exist?
-    id $user_name
-    if [ $? -eq 0 ];then
-        group_name=$(id -gn $user_name)
-    else
-        echo " [`date`] *** ERROR *** user [$user_name] is not exist.."
-        exit 100
+    echo "==> params user_name = $user_name, package_name=$package_name ."
+
+
+    #### begin to deploy
+    if [ ! -z "$package_name" ]; then
+        ## 判断将要部署的用户是否存在? judge the deploy user exist?
+        id $user_name
+        if [ $? -eq 0 ];then
+            group_name=$(id -gn $user_name)
+        else
+            echo " [`date`] *** ERROR *** user [$user_name] is not exist.."
+            exit 100
+        fi
+        ## 判断将要部署的 程序包是否存在? judge the deploy package exist?
+        if [ ! -f "$upload_dir/$package_name" ];then
+            echo " [`date`] * WARN * package [$upload_dir/$package_name] is not exist not in root user.."
+        else
+            ## begin to deploy
+            user_home_dir=$(cat /etc/passwd | egrep "^$user_name:" | awk -F":" '{ print $6 }')
+            echo " [`date`] we will to deploy the package[$package_name] to user[$user_name]($user_home_dir), group[$group_name]."
+            release_dir="$user_home_dir/kael/update/release/"
+            rm -f "$user_home_dir/kael/update/release/*"
+            if [ ! -d "$release_dir" ]; then
+                mkdir -p $release_dir
+            fi
+            mv $upload_dir/$package_name $release_dir
+            chown -R $user_name.$group_name $release_dir
+        fi
     fi
-    ## 判断将要部署的 程序包是否存在? judge the deploy package exist?
-    if [ ! -f "$upload_dir/$package_name" ];then
-        echo " [`date`] *** ERROR *** package [$upload_dir/$package_name] is not exist.."
-        exit 100
-    fi
-    ## begin to deploy
-    user_home_dir=$(cat /etc/passwd | egrep "^$user_name:" | awk -F":" '{ print $6 }')
-    echo " [`date`] we will to deploy the package[$package_name] to user[$user_name]($user_home_dir), group[$group_name]."
-    release_dir="$user_home_dir/kael/update/release/"
-    rm -f "$user_home_dir/kael/update/release/*"
-    if [ ! -d "$release_dir" ]; then
-        mkdir -p $release_dir
-    fi
-    mv $upload_dir/$package_name $release_dir
-    chown -R $user_name.$group_name $release_dir
+
     #su - $user_name -s /bin/sh kael/update/deploy.sh
     su - $user_name <<EOF
     /bin/sh kael/update/deploy.sh;
