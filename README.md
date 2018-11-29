@@ -31,8 +31,7 @@ kael 由几个不同作用的主要组件构成，以下为不同组件的基本
 
 多数情况下，工具包里的各个小工具（脚本），既可以在 linux 用户下执行操作，也可以在 root下执行操作，在 root 下控制指定用户下 java 应用的行为。
 
-## 操作指南
-以下为各组件的操作用法：
+## 各组件操作指南
 
 ### kael-pre-install 使用指南
 安装基础运行环境。
@@ -41,7 +40,7 @@ kael 由几个不同作用的主要组件构成，以下为不同组件的基本
 #### 环境检查
 某些工具需要一些依赖才能正常执行。
 - （package.sh 依赖）svn 客户端工具。此工具为 **package.sh** 工具从 svn 上下载最新代码时使用。 执行命令 ` svn --version ` 检查是否正常安装。若未安装可参考以下命令：
-   ```shell
+   ```bash
    # centos 
    yum install subversion -y
    ```
@@ -59,7 +58,7 @@ kael 由几个不同作用的主要组件构成，以下为不同组件的基本
 - **EXEC_SLEEP_INTERVAL** : 多步执行时，时间停顿，方便执行人员查看。
 
 示例：
-```shell
+```bash
 ENV_HOME="$HOME"
 PROJECT_NAME=project-name
 
@@ -71,3 +70,47 @@ MVN_PROFILE="common"
 EXEC_SLEEP_INTERVAL=1
 ```
 
+#### 命令执行
+命令位置：`kael/update/`。
+
+- **package.sh** 打包：
+```shell
+# 项目用户执行
+sh package.sh
+```
+
+- **deploy.sh** 部署，运行部署后，程序包将会部署至运行用户的 `~/apps/docs` 目录下：
+   - root 用户执行语法：` sh deploy.sh <user> [<version>] ，user为 linux 用户，version 为 程序版本。
+      ```bash
+      # 部署项目 test
+      sh deploy.sh test
+
+      # 部署项目 test 的 1.0 版本
+      sh deploy.sh test 1.0
+      ```
+   - 非 root 用户执行语法：`sh deploy.sh [<version>]
+      ```bash
+      # 部署项目 test，在 test 用户下执行
+      sh deploy.sh
+
+      # 部署项目 test 的 1.0 版本，在 test 用户下执行
+      sh deploy.sh 1.0
+      ```
+
+- **restart.sh** 启停。
+   - root 用户执行语法：` sh restart.sh <user> [<version>]。
+      ```bash
+      # 重启项目test
+      sh restart.sh test
+
+      # 重启项目 test 的 1.0 版本
+      sh restart.sh test 1.0
+      ```
+   - 非root用户执行语法：`sh restart.sh [<version>]`
+      ```bash
+      #重启项目test，在test用户执行
+      sh restart.sh
+
+      #重启项目 test的 1.0 版本，在test用户下执行
+      sh restart.sh 1.0
+      ```
