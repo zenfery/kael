@@ -36,6 +36,51 @@ kael 由几个不同作用的主要组件构成，以下为不同组件的基本
 ### kael-pre-install 使用指南
 安装基础运行环境。
 
+### mservice 使用指南
+#### 环境检查
+- jre/jdk 。执行命令 ` java -version` 检查。
+
+#### 配置文件修改
+配置文件为：`kael/mservice/conf/mservice.conf`  
+配置参数含义：
+- **JAVA_HOME** : (可选) JAVA_HOME，默认为依环境配置。
+- **ENV_HOME** : (可选) 项目部署的根目录，与 update 中的 ENV_HOME 一致。默认为 $HOME。
+- **JAVA_OPTS** : (可选) JAVA运行参数。
+- **DOCS_HOME** : (可选) 程序包最终运行部署的目录。默认为 $ENV_HOME/apps/docs。
+- **LOG_FOLDER** : (可选) 日志打印目录。默认为 $ENV_HOME/apps/logs。
+- **LOG_FILENAME** : (可选) 日志打印的文件。默认为 $LOG_FOLDER/logs/${APP_NAME}.log
+- **APP_NAME** : (可选) 应用程序名称。默认从发布目录中自动探测。
+
+配置示例：
+   ```bash
+   ENV_HOME=$HOME
+   JAVA_OPTS=" -Dspring.profiles.active=test -Dserver.port=9700 "
+   ```
+
+#### 命令执行
+   *目前只支持运行用户（非root）运行。*  
+
+语法：`sh kael/mservice/bin/mservice.sh start|stop|restart|status [<version>]`
+   ```bash
+   ## 以下命令均在 test 用户下执行
+
+   # 启动服务 test
+   sh mservice.sh start
+   # 启动服务 test 的 1.0 版本
+   sh mservice.sh start 1.0
+
+   # 停止服务 test
+   sh mservice stop
+   
+   # 重启服务 test
+   sh mservice.sh restart
+   sh mservice.sh restart 1.0
+
+   # 查看服务状态
+   sh mservice.sh status
+   ```
+
+
 ### update 使用指南
 #### 环境检查
 某些工具需要一些依赖才能正常执行。
@@ -49,7 +94,7 @@ kael 由几个不同作用的主要组件构成，以下为不同组件的基本
 #### 配置文件修改
 配置文件为 ` kael/update/conf/env.conf`。
 
-配置文件参数解释:
+配置参数解释:
 - **EVN_HOME** : 项目部署运行环境的根目录，多数情况下设置为运行用户的 HOME 目录。
 - **PROJECT_NAME** : 项目的名称，多数情况下与用户的名称一致。
 - **SVN_DIR** : 项目的 SVN 地址。（package.sh 依赖）
@@ -58,26 +103,26 @@ kael 由几个不同作用的主要组件构成，以下为不同组件的基本
 - **EXEC_SLEEP_INTERVAL** : 多步执行时，时间停顿，方便执行人员查看。
 
 示例：
-```bash
-ENV_HOME="$HOME"
-PROJECT_NAME=project-name
+   ```bash
+   ENV_HOME="$HOME"
+   PROJECT_NAME=project-name
 
-SVN_DIR="https://192.168.2.100/svn/trunk/test"
-SVN_USER="user"
-SVN_PASS="password"
-MVN_PROFILE="common"
+   SVN_DIR="https://192.168.2.100/svn/trunk/test"
+   SVN_USER="user"
+   SVN_PASS="password"
+   MVN_PROFILE="common"
 
-EXEC_SLEEP_INTERVAL=1
-```
+   EXEC_SLEEP_INTERVAL=1
+   ```
 
 #### 命令执行
 命令位置：`kael/update/`。
 
-- **package.sh** 打包：
-```shell
-# 项目用户执行
-sh package.sh
-```
+- **package.sh** 打包。打好的程序包会置于运行用户的目录 `~/kael/update/release`下：
+   ```shell
+   # 项目用户执行
+   sh package.sh
+   ```
 
 - **deploy.sh** 部署，运行部署后，程序包将会部署至运行用户的 `~/apps/docs` 目录下：
    - root 用户执行语法：` sh deploy.sh <user> [<version>] `，user为 linux 用户，version 为 程序版本。
