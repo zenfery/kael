@@ -80,7 +80,7 @@ sh package.sh
 ```
 
 - **deploy.sh** 部署，运行部署后，程序包将会部署至运行用户的 `~/apps/docs` 目录下：
-   - root 用户执行语法：` sh deploy.sh <user> [<version>] ，user为 linux 用户，version 为 程序版本。
+   - root 用户执行语法：` sh deploy.sh <user> [<version>] `，user为 linux 用户，version 为 程序版本。
       ```bash
       # 部署项目 test
       sh deploy.sh test
@@ -88,7 +88,7 @@ sh package.sh
       # 部署项目 test 的 1.0 版本
       sh deploy.sh test 1.0
       ```
-   - 非 root 用户执行语法：`sh deploy.sh [<version>]
+   - 非 root 用户执行语法：`sh deploy.sh [<version>]`
       ```bash
       # 部署项目 test，在 test 用户下执行
       sh deploy.sh
@@ -98,7 +98,7 @@ sh package.sh
       ```
 
 - **restart.sh** 启停。
-   - root 用户执行语法：` sh restart.sh <user> [<version>]。
+   - root 用户执行语法：` sh restart.sh <user> [<version>]`。
       ```bash
       # 重启项目test
       sh restart.sh test
