@@ -2,70 +2,104 @@
 #mail:xiangyun.jiang@chinacache.com
 # 当前脚本目录
 mydir=$(cd "$(dirname "$0")"; pwd)
-
 source $mydir/conf/env.conf
-####判断文件是否存在
-if [ -f /tmp/mservice.txt ];then
-    echo "file is exit"
-else
-   touch  /tmp/mservice.txt
-fi
-#####当前用户为root，并且参数=all时########
-if [ `whoami` = "root" ] && [ $1 == "all" ];then
-    for i in $(cat /tmp/mservice.txt);
-    do
-    groupname=$(id -gn $i)
-    echo $groupname
-    type=`curl $PACKAGE_STORE_URL_PREFIX/$i/type`
-    version=`curl  $PACKAGE_STORE_URL_PREFIX/$i/version-latest`
-    fullname_4=$i-$version.$type
-    wget -SO /home/$i/kael/update/release/$fullname_4  $PACKAGE_STORE_URL_PREFIX/$i/$fullname_4
-    chown -R $i.$username /home/$i/kael/update/release
-    find /home/$i/kael/update/release/ -name "*.jar" -size 0 -exec rm -f {} \;
-    done
-#########当前用户为root时#######
-elif [ `whoami` = "root" ];then
-    echo "user is root"
-    type=`curl $PACKAGE_STORE_URL_PREFIX/$1/type`
-    version=`curl  $PACKAGE_STORE_URL_PREFIX/$1/version-latest`
-    fullname=$1-$version.$type
-    echo $fullname
-    groupname=$(id -gn $1)
-    if [ $2 ];then
-        type=`curl $PACKAGE_STORE_URL_PREFIX/$1/type`
-        fullname_2=$1-$2.$type
-        wget -SO /home/$1/kael/update/release/$fullname_2 $PACKAGE_STORE_URL_PREFIX/$1/$fullname_2
-        chown -R $1.$groupname /home/$1/kael/update/release
-        find /home/$1/kael/update/release/ -name "*.jar" -size 0 -exec rm -f {} \;
-    else
-        type=`curl $PACKAGE_STORE_URL_PREFIX/$1/type`
-        fullname_3=$1-$version.$type
-        wget -SO /home/$1/kael/update/release/$fullname_3 $PACKAGE_STORE_URL_PREFIX/$1/$fullname_3
-        chown -R $1.$groupname /home/$1/kael/update/release
-        find /home/$1/kael/update/release/ -name "*.jar" -size 0 -exec rm -f {} \;
+
+
+#########部分参数处理#######
+
+#########使用方法########
+function usage(){
+    echo -e  "\033[43;35m 使用方法如下：以下参数支持版本号\033[0m \n" 
+    echo -e  "\033[43;35m ****** usage(root):$0 all \033[0m \n"
+    echo -e  "\033[43;35m ******             $0 $1 $2 \033[0m \n"
+    echo -e  "\033[43;35m ******usage(not root):$0 \033[0m \n"
+    echo -e  "\033[43;35m *****                 $0 $1 \033[0m \n"
+
+}
+######root执行时#######
+function root_exec(){
+    user_name=$1
+    version=$2
+
+    if [ -z "$user_name" ];then
+        echo " *** error *** : the input user_name is null, exit"
+        usage
+        exit 200
     fi
-##########当前用户非root时###########
-elif [ `whoami` != "root" ];then
-    type=`curl $PACKAGE_STORE_URL_PREFIX/$(whoami)/type`
-    groupname=$(id -gn $(whoami))
-    full_package=$(whoami)-.$type
-        if [ $1 ];then
-            type=`curl $PACKAGE_STORE_URL_PREFIX/$(whoami)/type`
-            fullname_1=$(whoami)-$1.$type
-            wget -SO /home/$(whoami)/kael/update/release/$fullname_1  $PACKAGE_STORE_URL_PREFIX/$(whoami)/$fullname_1
-            chown -R $(whoami).$groupname /home/$(whoami)/kael/update/release
-            find /home/$(whoami)/kael/update/release/ -name "*.jar" -size 0 -exec rm -f {} \;
-        else
-             type=`curl $PACKAGE_STORE_URL_PREFIX/$(whoami)/type`
-             version1=`curl  $PACKAGE_STORE_URL_PREFIX/$(whoami)/version-latest`
-             fullname_7=$(whoami)-$version1.$type
-             wget -SO /home/$(whoami)/kael/update/release/$fullname_7  $PACKAGE_STORE_URL_PREFIX/$(whoami)/$fullname_7
-             chown -R $(whoami).$groupname /home/$(whoami)/kael/update/release
-             find /home/$(whoami)/kael/update/release/ -name "*.jar" -size 0 -exec rm -f {} \;
-        fi
-else
-        echo  "user is not root"
-        exit 0
 
+    ## not all
+    if [ "all" != "$user_name" ];then
+        id $user_name >& /dev/null
+        if [ $? -ne 0 ];then
+            echo " *** error ***: the user[$user_name] is not exist, exit!!!"
+            exit 201
+        fi
+        
+        su - $user_name <<EOF
+        /bin/sh kael/update/pull.sh $version;
+EOF
+    ## all
+    else
+        for user_name in $(cat /tmp/users);do
+            /bin/sh $mydir/pull.sh $user_name
+        done
+    fi
+
+}
+
+
+##########非root用户执行时#########
+function no_root_exec(){
+    service=$PROJECT_NAME
+    if [ -z "$service" ];then
+        echo " *** error *** service name is null, exit."
+        exit 100
+    fi
+
+    version=$1
+    if [ -z "$version" ];then
+        version_url=$PACKAGE_STORE_URL_PREFIX/$service/version-latest
+        echo "=> it will fetch the package version from url : $version_url"
+        version=`curl $version_url`
+        if [ -z "$version" ]; then
+            echo " *** error *** version is null, exit."
+            exit 101
+        fi
+    fi
+
+    type_url=$PACKAGE_STORE_URL_PREFIX/$service/type
+    echo "=> it will fetch the package type from url : $type_url"
+    packae_type=`curl $type_url`
+    if [ -z "$package_type" ]; then
+        package_type=jar
+    fi
+    
+    ## download package
+    package_name=$service-$version.$package_type
+    echo "=> the package_name is : $package_name"
+    package_url=$PACKAGE_STORE_URL_PREFIX/$service/$package_name
+    echo "=> the package_url is : $package_url"
+    wget -SO /home/$(whoami)/kael/update/release/$package_name $package_url 
+    find /home/$(whoami)/kael/update/release/ -name "*.jar" -size 0 -exec rm -f {} \;
+    
+    groupname=$(id -gn $(whoami))
+    chown -R $(whoami).$groupname /home/$(whoami)/kael/update/release
+
+}
+
+#########
+current_user=$(whoami)
+if [ $current_user = "root" ];then
+   root_exec $@
+else
+   no_root_exec $@
 fi
 
+
+####判断文件是否存在
+#if [ -f /tmp/mservice.txt ];then
+#    usage
+#    echo "file is exit"
+#else
+#   touch  /tmp/mservice.txt
+#fi
