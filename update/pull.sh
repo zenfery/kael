@@ -20,6 +20,12 @@ function usage(){
 function root_exec(){
     user_name=$1
     version=$2
+    file=$mydir/conf/users
+    if [ ! -f $file ];then
+        echo "*****error *****:the $file  is not exit"
+        exit 3
+    fi
+
 
     if [ -z "$user_name" ];then
         echo " *** error *** : the input user_name is null, exit"
@@ -40,7 +46,7 @@ function root_exec(){
 EOF
     ## all
     else
-        for user_name in $(cat /tmp/users);do
+        for user_name in $(cat $mydir/conf/users);do
             /bin/sh $mydir/pull.sh $user_name
         done
     fi
@@ -95,11 +101,3 @@ else
    no_root_exec $@
 fi
 
-
-####判断文件是否存在
-#if [ -f /tmp/mservice.txt ];then
-#    usage
-#    echo "file is exit"
-#else
-#   touch  /tmp/mservice.txt
-#fi
