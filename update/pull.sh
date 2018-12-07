@@ -1,5 +1,5 @@
 #!/bin/bash
-#mail:xiangyun.jiang@chinacache.com
+#mail:*******
 # 当前脚本目录
 mydir=$(cd "$(dirname "$0")"; pwd)
 source $mydir/conf/env.conf
