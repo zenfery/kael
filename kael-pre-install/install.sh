@@ -47,6 +47,13 @@ function is_root(){
     fi
 }
 
+## 初始化操作
+function init(){
+    log " ===> init() ..."
+    sh $mydir/init.sh
+    sh $mydir/../update/init.sh
+}
+
 #### base install 基础安装,创建用户和基础目录
 function base (){
     log " Begin to init the user environment..."
@@ -289,6 +296,9 @@ function tools() {
 function main(){
     log "Welcome to use the $APP_AAME [$VERSION] tools, We believe you will like it..."
     is_root
+
+    init
+    
     case $1 in
         nginx )
             nginx
