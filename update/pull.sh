@@ -75,7 +75,7 @@ function no_root_exec(){
 
     type_url=$PACKAGE_STORE_URL_PREFIX/$service/type
     echo "=> it will fetch the package type from url : $type_url"
-    packae_type=`curl $type_url`
+    package_type=`curl $type_url`
     if [ -z "$package_type" ]; then
         package_type=jar
     fi
@@ -85,11 +85,14 @@ function no_root_exec(){
     echo "=> the package_name is : $package_name"
     package_url=$PACKAGE_STORE_URL_PREFIX/$service/$package_name
     echo "=> the package_url is : $package_url"
-    wget -SO /home/$(whoami)/kael/update/release/$package_name $package_url 
-    find /home/$(whoami)/kael/update/release/ -name "*.jar" -size 0 -exec rm -f {} \;
+    dir=$mydir/release
+    mkdir -p $dir
+    wget -SO $dir/$package_name $package_url 
+    find $dir/ -name "*.jar" -size 0 -exec rm -f {} \;
+    find $dir/ -name "*.war" -size 0 -exec rm -f {} \;
     
     groupname=$(id -gn $(whoami))
-    chown -R $(whoami).$groupname /home/$(whoami)/kael/update/release
+    chown -R $(whoami).$groupname $dir
 
 }
 
