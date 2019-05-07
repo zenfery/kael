@@ -184,14 +184,15 @@ function start(){
     echo "Starting mservice $JARFILE ..."
     touch "$PIDFILE"
    
-    start_cmd="nohup $JAVA_CMD $JAVA_OPTS -jar $JARFILE " 
-    if [ -z "$LOG_ENABLE" -o " -o "$LOG_ENABLE" == "true" ]; then
-        start_cmd="$start_cmd 2>&1 >> $log_full_filename "
+    start_cmd="nohup $JAVA_CMD $JAVA_OPTS -jar $JARFILE 2>&1 " 
+    if [ -z "$LOG_ENABLE" -o "$LOG_ENABLE" == "true" ]; then
+        start_cmd="$start_cmd >> $log_full_filename "
+    else
+        start_cmd="$start_cmd >> /dev/null "
     fi
     start_cmd="$start_cmd &"
     echo " INFO : Exec: $start_cmd"
-    ## nohup $JAVA_CMD $JAVA_OPTS -jar $JARFILE 2>&1 >> $log_full_filename  &
-    $start_cmd
+    eval "$start_cmd"
     echo $! > "$PIDFILE"
     echo " mservice $JARFILE started !!!"
 }
