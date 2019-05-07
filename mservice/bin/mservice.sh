@@ -155,6 +155,7 @@ echo "[`date`] ::: DOCS_HOME -> $DOCS_HOME"
 echo "[`date`] ::: JARFILE -> $JARFILE"
 echo "[`date`] ::: APP_NAME -> $APP_NAME"
 echo "[`date`] ::: LOG_FOLDER -> $LOG_FOLDER"
+echo "[`date`] ::: LOG_ENABLE -> $LOG_ENABLE"
 echo "[`date`] ::: LOG_FILENAME -> $LOG_FILENAME"
 
 log_full_filename=$LOG_FOLDER/$LOG_FILENAME
@@ -182,8 +183,15 @@ function start(){
     fi
     echo "Starting mservice $JARFILE ..."
     touch "$PIDFILE"
-    echo " INFO : Exec: nohup $JAVA_CMD $JAVA_OPTS -jar $JARFILE 2>&1 >> $log_full_filename  &"
-    nohup $JAVA_CMD $JAVA_OPTS -jar $JARFILE 2>&1 >> $log_full_filename  &
+   
+    start_cmd="nohup $JAVA_CMD $JAVA_OPTS -jar $JARFILE " 
+    if [ -z "$LOG_ENABLE" -o " -o "$LOG_ENABLE" == "true" ]; then
+        start_cmd="$start_cmd 2>&1 >> $log_full_filename "
+    fi
+    start_cmd="$start_cmd &"
+    echo " INFO : Exec: $start_cmd"
+    ## nohup $JAVA_CMD $JAVA_OPTS -jar $JARFILE 2>&1 >> $log_full_filename  &
+    $start_cmd
     echo $! > "$PIDFILE"
     echo " mservice $JARFILE started !!!"
 }

@@ -55,7 +55,7 @@ EOF
 
 
 ##########非root用户执行时#########
-function no_root_exec(){
+function not_root_exec(){
     service=$PROJECT_NAME
     if [ -z "$service" ];then
         echo " *** error *** service name is null, exit."
@@ -90,6 +90,7 @@ function no_root_exec(){
     wget -SO $dir/$package_name $package_url 
     find $dir/ -name "*.jar" -size 0 -exec rm -f {} \;
     find $dir/ -name "*.war" -size 0 -exec rm -f {} \;
+    find $dir/ -name "*.zip" -size 0 -exec rm -f {} \;
     
     groupname=$(id -gn $(whoami))
     chown -R $(whoami).$groupname $dir
@@ -101,6 +102,6 @@ current_user=$(whoami)
 if [ $current_user = "root" ];then
    root_exec $@
 else
-   no_root_exec $@
+   not_root_exec $@
 fi
 
