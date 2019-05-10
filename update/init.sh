@@ -23,5 +23,3 @@ if [ -n "$1" ]; then
         sed -i "s/@@PROJECT_NAME@@/$project_name/g" "$mydir/conf/env.conf"
     fi
 fi
-
-

@@ -18,21 +18,26 @@ function root_exec(){
 
         kael_tmp="$mydir/../kael.upgrade.tmp"
         cp -rf $mydir/../kael $kael_tmp
-        
+
         ## Download the latest version of kael from github
         echo "==> Begin to clone kael from github."
         cd $mydir/../
         rm -rf $mydir/
         git clone $KAEL_GITHUB_URL
-        
+
+        ## init
+        echo "==> Begin to init scripts."
+        echo "=> $mydir/kael-pre-install/init.sh"
+        $mydir/kael-pre-install/init.sh
+
         ## copy conf
         echo "==> Begin to recover kael config file."
-        echo "==> cp -r $kael_tmp/update/conf/* $mydir/update/conf/"
+        echo "=> cp -r $kael_tmp/update/conf/* $mydir/update/conf/"
         cp -rf $kael_tmp/update/conf/* $mydir/update/conf/
-        echo "==> cp -r $kael_tmp/mservice/conf/* $mydir/mservice/conf/"
+        echo "=> cp -r $kael_tmp/mservice/conf/* $mydir/mservice/conf/"
         cp -rf $kael_tmp/mservice/conf/* $mydir/mservice/conf/
 
-        echo "==> cp -r $kael_tmp/kael-pre-install/src/* $mydir/kael-pre-install/src/"
+        echo "=> cp -r $kael_tmp/kael-pre-install/src/* $mydir/kael-pre-install/src/"
         cp -r $kael_tmp/kael-pre-install/src/* $mydir/kael-pre-install/src/
 
         ## clear tmp

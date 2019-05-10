@@ -2,7 +2,7 @@
 Linux 平台下部署管理 Java Web(war包) / J2SE(jar包) 项目的工具包。
 
 
-## 你现在所处的环境是否适合使用 kael ?
+## 1、你现在所处的环境是否适合使用 kael ?
 - 如果你所在的公司是一个创业公司。  
 - 如果你所在的团队是公司里的一个小团队，公司并没有一个统一且完善的运维平台供各团队（部门）使用。
 - 你是一个运维，每天有大量的重复性工作：
@@ -15,7 +15,7 @@ Linux 平台下部署管理 Java Web(war包) / J2SE(jar包) 项目的工具包�
 如果你处在以上情况（不仅限于此），但是没有容器化 docker 的想法或技术能力，那么你可以尝试一下 kael 来帮助你摆脱烦恼。
 
 
-## 组件介绍
+## 2、组件介绍
 kael 由几个不同作用的主要组件构成，以下为不同组件的基本功能介绍：
 - **kael-pre-install**。安装软件包的基础运行环境，如安装程序 nginx、tomcat、jdk，创建程序运行用户，规划程序运行的环境目录（程序包发布目录、日志运行目录、常用工具包目录等）。
 - **update**。软件运维全生命周期：打包、上传、分发、发布、启停。
@@ -26,27 +26,28 @@ kael 由几个不同作用的主要组件构成，以下为不同组件的基本
    - **bin/mservice.sh**。启动、重启、停止 jar 包程序。
 
 
-## 设计思路
+## 3、设计思路
 部署软件采用 nginx + java 的方式来运行。一台 Linux 主机上部署一个 nginx，但是可以同时部署多个 java 应用，每个 java 应用之间使用 linux 用户隔离。
 
-多数情况下，工具包里的各个小工具（脚本），既可以在 linux 用户下执行操作，也可以在 root下执行操作，在 root 下控制指定用户下 java 应用的行为。
+多数情况下，工具包里的各个小工具（脚本），既可以在 linux 非root用户下执行操作，也可以在 root下执行操作，在 root 下控制指定用户下 java 应用的行为。
 
-## 各组件操作指南
+## 4、各组件操作指南
 
-### kael-pre-install 使用指南
+### 4.1、预安装工具 kael-pre-install 使用指南
 安装基础运行环境。
 
-### mservice 使用指南
-#### 环境检查
+### 4.2、微服务工具 mservice 使用指南
+#### 4.2.1、 环境检查
 - jre/jdk 。执行命令 ` java -version` 检查。
 
-#### 配置文件修改
+#### 4.2.2、配置文件修改
 配置文件为：`kael/mservice/conf/mservice.conf`  
 配置参数含义：
 - **JAVA_HOME** : (可选) JAVA_HOME，默认为依环境配置。
 - **ENV_HOME** : (可选) 项目部署的根目录，与 update 中的 ENV_HOME 一致。默认为 $HOME。
 - **JAVA_OPTS** : (可选) JAVA运行参数。
 - **DOCS_HOME** : (可选) 程序包最终运行部署的目录。默认为 $ENV_HOME/apps/docs。
+- **LOG_ENABLE** : (可选) 是否使用脚本收集控制台日志输出。默认为开启，如需关闭设置为 false。
 - **LOG_FOLDER** : (可选) 日志打印目录。默认为 $ENV_HOME/apps/logs。
 - **LOG_FILENAME** : (可选) 日志打印的文件。默认为 $LOG_FOLDER/logs/${APP_NAME}.log
 - **APP_NAME** : (可选) 应用程序名称。默认从发布目录中自动探测。
@@ -54,10 +55,11 @@ kael 由几个不同作用的主要组件构成，以下为不同组件的基本
 配置示例：
    ```bash
    ENV_HOME=$HOME
+   LOG_ENABLE=false
    JAVA_OPTS=" -Dspring.profiles.active=test -Dserver.port=9700 "
    ```
 
-#### 命令执行
+#### 4.2.3、命令执行
    *目前只支持运行用户（非root）运行。*  
 
 语法：`sh kael/mservice/bin/mservice.sh start|stop|restart|status [<version>]`
@@ -71,7 +73,7 @@ kael 由几个不同作用的主要组件构成，以下为不同组件的基本
 
    # 停止服务 test
    sh mservice stop
-   
+
    # 重启服务 test
    sh mservice.sh restart
    sh mservice.sh restart 1.0
@@ -81,17 +83,17 @@ kael 由几个不同作用的主要组件构成，以下为不同组件的基本
    ```
 
 
-### update 使用指南
-#### 环境检查
+### 4.3、升级发布工具 update 使用指南
+#### 4.3.1、 环境检查
 某些工具需要一些依赖才能正常执行。
 - （package.sh 依赖）svn 客户端工具。此工具为 **package.sh** 工具从 svn 上下载最新代码时使用。 执行命令 ` svn --version ` 检查是否正常安装。若未安装可参考以下命令：
    ```bash
-   # centos 
+   # centos
    yum install subversion -y
    ```
 - （package.sh 依赖）maven客户端。此工具为 **package.sh** 工具构建打包java项目时使用。
 
-#### 配置文件修改
+#### 4.3.2、配置文件修改
 配置文件为 ` kael/update/conf/env.conf`。
 
 配置参数解释:
@@ -115,7 +117,7 @@ kael 由几个不同作用的主要组件构成，以下为不同组件的基本
    EXEC_SLEEP_INTERVAL=1
    ```
 
-#### 命令执行
+#### 4.3.3、命令执行
 命令位置：`kael/update/`。
 
 - **package.sh** 打包。打好的程序包会置于运行用户的目录 `~/kael/update/release`下：
@@ -159,3 +161,20 @@ kael 由几个不同作用的主要组件构成，以下为不同组件的基本
       #重启项目 test的 1.0 版本，在test用户下执行
       sh restart.sh 1.0
       ```
+
+
+### 4.4 版本升级
+kael 工具包从 2.4 开始支持一鍵升级新版本。升级请先升级 root 用户下的 kael 工具包，再升级相应用户下。
+
+  ```bash
+  # 查看当前版本
+  sh kael/version.sh
+
+  # 升级root下的版本
+  su - root
+  sh kael/upgrade.sh
+
+  # 升级用户 test 下的版本(在root用户下执行)
+  su - root
+  sh kael/upgrade.sh test
+  ```
