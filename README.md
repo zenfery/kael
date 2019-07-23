@@ -162,8 +162,38 @@ kael 由几个不同作用的主要组件构成，以下为不同组件的基本
       sh restart.sh 1.0
       ```
 
+### 4.4、灰度升级工具 gray
+#### 4.4.1 nginx服务器的灰度
+基于 nginx 的灰度发布，一般会采用根据 cookie 或 ip 来进行灰度发布；如果每次上线都由运维来修改配置文件来进行灰度的话，不方便，并且增加了出错的概率。此灰度工具，仅仅是将修改配置文件的工作交由脚本来完成，避免手动带来的风险。
 
-### 4.4 版本升级
+配置文件为 ` kael/gray/nginx/config`。
+
+配置参数解释:
+- **NGINX_HOME** : nginx 的安装目录。如: /usr/local/nginx。
+- **NGINX_SITES_DIR** : nginx 的所有配置文件目录。如: ${NGINX_HOME}/conf/sites。
+- **NGINX_SBIN** : nginx 的执行文件。如: ${NGINX_HOME}/sbin/nginx。
+
+命令执行：` kael/gray/nginx/gray.sh <cmd> <conf_name> [<gray_name>]`。
+   - **cmd** : 取值范围 start | recover | clear 。
+      - start : 开始灰度。
+      - recover : 结束灰度。恢复到原始状态。
+      - clear : 程序为了保险起见，会生成一些强制的备份文件。如果确定是安全的话，可以执行此命令，将其删除。
+
+   在使用灰度工具之前，需要提前准备发即将要灰度的配置文件。比如，需要灰度的配置文件为: nginx/conf/sites/test.conf，灰度配置文件可以有多个，如：nginx/conf/sites/test.gray.0，nginx/conf/sites/test.gray.import。那么 conf_name 则为 test，gray_name 即为 0 和 import。
+
+   命令示例：
+   ```bash
+      # 针对 test 灰度 0
+      sh gray/nginx/gray.sh start test 0
+      # 针对 test 灰度 import
+      sh gray/nginx/gray.sh start test import
+      # 结束灰度
+      sh gray/nginx/gray.sh recover test
+      # 清理强制备份的配置文件
+      sh gray/nginx/gray.sh clear test
+   ```
+
+## 5、 版本升级
 kael 工具包从 2.4 开始支持一鍵升级新版本。升级请先升级 root 用户下的 kael 工具包，再升级相应用户下。
 
   ```bash

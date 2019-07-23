@@ -1,0 +1,3 @@
+NGINX_HOME=/usr/local/nginx
+NGINX_SITES_DIR=${NGINX_HOME}/conf/sites
+NGINX_SBIN=${NGINX_HOME}/sbin/nginx
