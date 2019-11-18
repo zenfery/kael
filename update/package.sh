@@ -73,12 +73,12 @@ function svn_pull(){
 
 if [ $GIT_ENABLED -eq 1 ]
 then
-git_pull
+	git_pull
 fi
 
 if [ $SVN_ENABLED -eq 1 ]
 then
-svn_pull
+	svn_pull
 fi
 
 echo " DEBUG : cd $mydir"
