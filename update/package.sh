@@ -43,7 +43,13 @@ function git_pull(){
     else
         echo " INFO  : work directory [$work] is not exists, create it by clone..."
         echo " INFO  : git clone [$GIT_DIR][$GIT_BRANCH] to [$work]..."
-        git clone -b $GIT_BRANCH $GIT_DIR $work
+        if [ -z "$GIT_USER" ] || [ -z "$GIT_PASS" ]; then
+            echo " DEBUG : git clone -b $GIT_BRANCH $GIT_DIR $work with input or SSH pass"
+            git clone -b $GIT_BRANCH $GIT_DIR $work
+        else
+            echo " DEBUG : git clone -b $GIT_BRANCH ${GIT_DIR/:\/\//://$GIT_USER:$GIT_PASS@} $work with url pass"
+            git clone -b $GIT_BRANCH ${GIT_DIR/:\/\//://$GIT_USER:$GIT_PASS@} $work
+        fi
         isUpdate=1
     fi
 }
