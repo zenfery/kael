@@ -49,36 +49,36 @@ function git_pull(){
 }
 
 function svn_pull(){ 
-	#### 从SVN上更新主干程序
-	# 判断是否有work directory:
-	echo " INFO  : ******************************** begin update svn ******************** " 
-	isUpdate=0 # 判断是否有代码库更新
-	if [ -d "$work" ]; then
-		echo " INFO  : work directory [$work] exists, svn update..."
-		echo " DEBUG : cd $work"
-		cd "$work"
-		echo " INFO  : svn update [$SVN_DIR] to [$work]..."
-		echo " DEBUG : svn --non-interactive --trust-server-cert up --username $SVN_USER --password $SVN_PASS"
-		isUpdate=$[$(svn --non-interactive --trust-server-cert up --username "$SVN_USER" --password "$SVN_PASS" | wc -l)-1]
-	else
-		echo " INFO  : work directory [$work] is not exists, create it..."
-		echo " INFO  : create : mkdir -p $work ..."
-		mkdir -p "$work"
-		echo " DEBUG : cd $work"
-		cd "$work"
-		echo " INFO  : svn checkout [$SVN_DIR] to [$work]..."
-		isUpdate=$[$(svn --non-interactive --trust-server-cert --username "$SVN_USER" --password "$SVN_PASS" co "$SVN_DIR" ./ | wc -l)-1]
-	fi
+    #### 从SVN上更新主干程序
+    # 判断是否有work directory:
+    echo " INFO  : ******************************** begin update svn ******************** " 
+    isUpdate=0 # 判断是否有代码库更新
+    if [ -d "$work" ]; then
+        echo " INFO  : work directory [$work] exists, svn update..."
+        echo " DEBUG : cd $work"
+        cd "$work"
+        echo " INFO  : svn update [$SVN_DIR] to [$work]..."
+        echo " DEBUG : svn --non-interactive --trust-server-cert up --username $SVN_USER --password $SVN_PASS"
+        isUpdate=$[$(svn --non-interactive --trust-server-cert up --username "$SVN_USER" --password "$SVN_PASS" | wc -l)-1]
+    else
+        echo " INFO  : work directory [$work] is not exists, create it..."
+        echo " INFO  : create : mkdir -p $work ..."
+        mkdir -p "$work"
+        echo " DEBUG : cd $work"
+        cd "$work"
+        echo " INFO  : svn checkout [$SVN_DIR] to [$work]..."
+        isUpdate=$[$(svn --non-interactive --trust-server-cert --username "$SVN_USER" --password "$SVN_PASS" co "$SVN_DIR" ./ | wc -l)-1]
+    fi
 }
 
 if [ $GIT_ENABLED -eq 1 ]
 then
-git_pull
+    git_pull
 fi
 
 if [ $SVN_ENABLED -eq 1 ]
 then
-svn_pull
+    svn_pull
 fi
 
 echo " DEBUG : cd $mydir"
