@@ -96,9 +96,9 @@ isPackageSucc=-1 #判断打包是否成功 0为成功
 #isUpdate=1 
 #isPackageSucc=0 #判断打包是否成功 0为成功
 if [ $isUpdate -le 0 ];then
-    echo " INFO  : svn has not update, do nothing... "
+    echo " INFO  : repository has not update, do nothing... "
 else
-    echo " INFO  : svn has update... "
+    echo " INFO  : repository has update... "
     echo " INFO  : ******************************** begin to package  ******************** "
     echo " DEBUG : cd $work"
     cd "$work"
