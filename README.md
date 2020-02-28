@@ -34,7 +34,35 @@ kael 由几个不同作用的主要组件构成，以下为不同组件的基本
 ## 4、各组件操作指南
 
 ### 4.1、预安装工具 kael-pre-install 使用指南
-安装基础运行环境。
+安装基础运行环境。在发布项目包之前，需要 Linux 用户以及 Java 环境。
+
+#### 4.1.1、下载 kael 安装包。
+下载 kael 安装包，必须使用 root 用户下载，建议目录：/root/kael。
+```bash
+git clone https://github.com/zenfery/kael.git
+sh kael/kael-pre-install/init.sh
+```
+#### 4.1.2、安装
+安装命令如下：`sh kael/kael-pre-install/install.sh [type]`
+**type** 的可取值范围如下：
+- **-**。即不带参数的情况，安装基础的用户环境。
+- **nginx**。单独安装 nginx 应用。
+- **mservice**。安装 jar 包类型应该环境，比如 SpringBoot 类应用。
+- **web**。安装 Tomcat 应用环境。
+不同的 type 需要将对应的安装包上传至 `kael-pre-install/src/` 目录下。所需要的安装包如下：
+type     | 安装包
+:-       |  :-:
+nginx    | nginx-1.10.1.tar.gz <br/> pcre-7.9.tar.gz <br/> zlib-1.2.3.tar.gz <br> ngx_cache_purge-2.3.tar.gz
+mservice | jdk-8u77-linux-x64.tar.gz
+web      | jdk-8u77-linux-x64.tar.gz <br/> apache-tomcat-8.0.30.tar.gz
+
+  *注：安装包版本根据实际需要选择。*
+
+安装示例：
+```bash
+cd kael/kael-pre-install/
+sh install.sh mservice
+```
 
 ### 4.2、微服务工具 mservice 使用指南
 #### 4.2.1、 环境检查
@@ -58,6 +86,7 @@ kael 由几个不同作用的主要组件构成，以下为不同组件的基本
    LOG_ENABLE=false
    JAVA_OPTS=" -Dspring.profiles.active=test -Dserver.port=9700 "
    ```
+*注意: 安装完 mservice 环境，记得根据实际情况修改这两个运行参数：spring.profiles.active、server.port。*
 
 #### 4.2.3、命令执行
    *目前只支持运行用户（非root）运行。*  
