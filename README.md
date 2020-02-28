@@ -130,6 +130,12 @@ sh install.sh mservice
 - **PROJECT_NAME** : 项目的名称，多数情况下与用户的名称一致。
 - **SVN_DIR** : 项目的 SVN 地址。（package.sh 依赖）
 - **SVN_USER** : 项目的 SVN 用户。（package.sh 依赖）
+- **SVN_ENABLED** : 项目是否启用SVN。（package.sh 依赖）
+- **GIT_DIR** : 项目的 GIT 地址。（package.sh 依赖）
+- **GIT_BRANCH** : 项目的 GIT 分支。（package.sh 依赖）
+- **GIT_USER** : 项目的 GIT 用户。（package.sh 依赖）
+- **GIT_PASS** : 项目的 GIT 密码。（package.sh 依赖）
+- **GIT_ENABLED** : 项目是否启用GIT。（package.sh 依赖）
 - **MVN_PROFILE** : mvn 命令打包时，使用的 Profile，若设置为 test，则 `mvn clean package -Ptest`。
 - **EXEC_SLEEP_INTERVAL** : 多步执行时，时间停顿，方便执行人员查看。
 
