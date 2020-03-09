@@ -163,6 +163,8 @@ sh install.sh mservice
 
 - **deploy.sh** 部署，运行部署后，程序包将会部署至运行用户的 `~/apps/docs` 目录下：
    - root 用户执行语法：` sh deploy.sh <user> [<version>] `，user为 linux 用户，version 为 程序版本。
+
+      执行此命令前，程序包应该上传至 `/root/upload` 或 `~<user>/kael/update/release/` 目录下。
       ```bash
       # 部署项目 test
       sh deploy.sh test
