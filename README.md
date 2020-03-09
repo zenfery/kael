@@ -50,11 +50,12 @@ sh kael/kael-pre-install/init.sh
 - **mservice**。安装 jar 包类型应该环境，比如 SpringBoot 类应用。
 - **web**。安装 Tomcat 应用环境。
 不同的 type 需要将对应的安装包上传至 `kael-pre-install/src/` 目录下。所需要的安装包如下：
-type     | 安装包
-:-       |  :-:
-nginx    | nginx-1.10.1.tar.gz <br/> pcre-7.9.tar.gz <br/> zlib-1.2.3.tar.gz <br> ngx_cache_purge-2.3.tar.gz
-mservice | jdk-8u77-linux-x64.tar.gz
-web      | jdk-8u77-linux-x64.tar.gz <br/> apache-tomcat-8.0.30.tar.gz
+
+|type     | 安装包 |
+|:-       |  :-:  |
+|nginx    | nginx-1.10.1.tar.gz <br/> pcre-7.9.tar.gz <br/> zlib-1.2.3.tar.gz <br> ngx_cache_purge-2.3.tar.gz  |
+|mservice | jdk-8u77-linux-x64.tar.gz  |
+|web      | jdk-8u77-linux-x64.tar.gz <br/> apache-tomcat-8.0.30.tar.gz  |
 
   *注：安装包版本根据实际需要选择。*
 
