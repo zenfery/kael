@@ -64,7 +64,7 @@ sh kael/kael-pre-install/init.sh
 cd kael/kael-pre-install/
 sh install.sh mservice
 ```
-![install mservice](./kael-pre-install-mservice.png)
+![install mservice](https://github.com/zenfery/kael/blob/master/kael-pre-install-msevice.png)
 
 ### 4.2、微服务工具 mservice 使用指南
 #### 4.2.1、 环境检查
