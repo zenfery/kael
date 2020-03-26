@@ -47,7 +47,7 @@ sh kael/kael-pre-install/init.sh
 **type** 的可取值范围如下：
 - **-**。即不带参数的情况，安装基础的用户环境。
 - **nginx**。单独安装 nginx 应用。
-- **mservice**。安装 jar 包类型应该环境，比如 SpringBoot 类应用。
+- **mservice**。安装 jar 包类型应用环境，比如 SpringBoot 类应用。
 - **web**。安装 Tomcat 应用环境。
 不同的 type 需要将对应的安装包上传至 `kael-pre-install/src/` 目录下。所需要的安装包如下：
 
@@ -64,6 +64,7 @@ sh kael/kael-pre-install/init.sh
 cd kael/kael-pre-install/
 sh install.sh mservice
 ```
+![install mservice](./kael-pre-install-mservice.png)
 
 ### 4.2、微服务工具 mservice 使用指南
 #### 4.2.1、 环境检查
@@ -72,7 +73,7 @@ sh install.sh mservice
 #### 4.2.2、配置文件修改
 配置文件为：`kael/mservice/conf/mservice.conf`  
 配置参数含义：
-- **JAVA_HOME** : (可选) JAVA_HOME，默认为依环境配置。
+- **JAVA_HOME** : (可选) JAVA_HOME，默认为当前环境配置。
 - **ENV_HOME** : (可选) 项目部署的根目录，与 update 中的 ENV_HOME 一致。默认为 $HOME。
 - **JAVA_OPTS** : (可选) JAVA运行参数。
 - **DOCS_HOME** : (可选) 程序包最终运行部署的目录。默认为 $ENV_HOME/apps/docs。
